@@ -1,6 +1,9 @@
 package com.codeup.codeupspringblog.controllers;
 
-import com.codeup.codeupspringblog.Post;
+import com.codeup.codeupspringblog.models.Post;
+import com.codeup.codeupspringblog.models.User;
+import com.codeup.codeupspringblog.repositories.PostRepository;
+import com.codeup.codeupspringblog.repositories.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +13,40 @@ import java.util.List;
 
 @Controller
 public class PostController {
+    private final PostRepository postDao;
+    private UserRepository userDao;
+
+    public PostController(PostRepository postDao, UserRepository userDao) {
+        this.postDao = postDao;
+        this.userDao = userDao;
+    }
+
     @GetMapping("/posts")
     public String postIndexPage(Model model){
-        Post post1 = new Post("Show Post Test", "Testing the show posts");
-        Post post2 = new Post("Show Post Test2", "Testing the show posts2");
-        List<Post> posts = new ArrayList<>();
-        posts.add(post1);
-        posts.add(post2);
-        model.addAttribute("posts", posts);
+        model.addAttribute("posts", postDao.findAll());
         return "posts/index";
     }
 
     @RequestMapping(path="/posts/{id}", method= RequestMethod.GET)
-    public String postId(@PathVariable int id, Model model){
-        Post showPost = new Post("Show Post Test", "Testing the show posts");
-        model.addAttribute("title", showPost.getTitle());
-        model.addAttribute("body", showPost.getBody());
-        return "posts/show";
+    public String postId(@PathVariable long id, Model vModel){
+        if(postDao.existsById(id)) {
+            Post post = postDao.findById(id).get();
+            vModel.addAttribute("post", post);
+            return "posts/show";
+        }
+        return "redirect:/posts";
     }
 
     @GetMapping("/posts/create")
-    @ResponseBody
     public String postCreatePage(){
-        return "view form for creating post";
+        return "posts/create";
     }
 
     @PostMapping("/posts/create")
-    @ResponseBody
-    public String postCreatedPost(){
-        return "create a new post";
+    public String postCreatedPost(@RequestParam("title") String title, @RequestParam("body") String body){
+        User user = userDao.findById(1L).get();
+        Post post = new Post(title, body, user);
+        postDao.save(post);
+        return "redirect:/posts";
     }
 }
