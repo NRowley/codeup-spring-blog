@@ -6,12 +6,17 @@
 <header th:replace="partials/partials :: header('Create a Post')"></header>
 
 <main class="container">
-    <form th:action="@{/posts/create}" th:method="POST">
-        <!--            input for title-->
-        <input type="text" name="title" placeholder="Title" class="form-control">
-        <!--            input for body-->
-        <textarea type="text" name="body" placeholder="Body" class="form-control"></textarea>
-        <!--            submit button-->
+<!--    <form th:action="@{/posts/create}" th:method="POST">-->
+<!--        &lt;!&ndash;            input for title&ndash;&gt;-->
+<!--        <input type="text" name="title" placeholder="Title" class="form-control">-->
+<!--        &lt;!&ndash;            input for body&ndash;&gt;-->
+<!--        <textarea type="text" name="body" placeholder="Body" class="form-control"></textarea>-->
+<!--        &lt;!&ndash;            submit button&ndash;&gt;-->
+<!--        <button type="submit" class="btn btn-primary">Create Post</button>-->
+<!--    </form>-->
+    <form th:action="@{/posts/create}" th:method="POST" th:object="${post}">
+        <input th:field="*{title}" class="form-control"/>
+        <input th:field="*{body}" class="form-control"/>
         <button type="submit" class="btn btn-primary">Create Post</button>
     </form>
 </main>
